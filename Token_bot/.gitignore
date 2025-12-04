@@ -1,0 +1,9 @@
+modules/creds.json
+Token_bot/token_bot.py
+__pycache__/
+.idea/
+.vscode/
+venv/
+creds.json
+modules/creds.json
+
