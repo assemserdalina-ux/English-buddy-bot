@@ -1,14 +1,22 @@
+import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
-# === Подключение к Google Sheets ===
-scope = ["https://spreadsheets.google.com/feeds",
-         "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+
+scope = [
+    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/drive"
+]
+
+# Путь к файлу с ключами:
+# 1) на сервере берём из переменной окружения GOOGLE_CREDS_JSON
+# 2) локально (на твоём компьютере) можно оставить creds.json
+creds_path = os.getenv("GOOGLE_CREDS_JSON", "creds.json")
+
+creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
 client = gspread.authorize(creds)
 
-# Открываем таблицу по ID (замени на свой ключ из URL Google Sheets)
 sheet = client.open_by_key("14rygWcgNxr8QsGcaEp8YU652V5lPJMVZdUh5SK9j6PA").sheet1
 
 
