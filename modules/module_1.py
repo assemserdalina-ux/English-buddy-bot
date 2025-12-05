@@ -100,7 +100,16 @@ def register_handlers(bot):
         index = user_progress[user_id]["index"]
         correct_answer = quiz_questions[index]["answer"]
 
-        if message.text.strip().lower() == correct_answer.strip().lower():
+        user_answer = message.text.strip().lower()
+
+        # Если правильный ответ — список (например, несколько вариантов)
+        if isinstance(correct_answer, list):
+            normalized = [str(a).strip().lower() for a in correct_answer]
+            is_correct = user_answer in normalized
+        else:
+            is_correct = user_answer == str(correct_answer).strip().lower()
+
+        if is_correct:
             user_progress[user_id]["score"] += 1
             bot.send_message(user_id, "✅ Correct!")
         else:
@@ -108,3 +117,4 @@ def register_handlers(bot):
 
         user_progress[user_id]["index"] += 1
         ask_question(user_id)
+
