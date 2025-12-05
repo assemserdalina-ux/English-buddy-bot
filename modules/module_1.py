@@ -166,7 +166,35 @@ def register_handlers(bot):
         user_id = message.chat.id
         questions = get_questions_for_user(user_id)
         index = user_progress[user_id]["index"]
+
+        # Защита от выхода за границы
+        if index >= len(questions):
+            bot.send_message(user_id, "✅ Quiz already finished.")
+            # на всякий случай чистим прогресс
+            user_progress.pop(user_id, None)
+            return
+
         correct_answer = questions[index]["answer"]
+        user_answer = message.text.strip().lower()
+
+        # correct_answer может быть строкой или списком
+        if isinstance(correct_answer, list):
+            normalized = [str(a).strip().lower() for a in correct_answer]
+            is_correct = user_answer in normalized
+        else:
+            is_correct = user_answer == str(correct_answer).strip().lower()
+
+        if is_correct:
+            user_progress[user_id]["score"] += 1
+            bot.send_message(user_id, "✅ Correct!")
+        else:
+            bot.send_message(
+                user_id,
+                f"❌ Wrong. Correct answer was: {correct_answer}",
+            )
+
+        user_progress[user_id]["index"] += 1
+        ask_question(user_id)
 
         user_answer = message.text.strip().lower()
 
