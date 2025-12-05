@@ -1,7 +1,8 @@
 from telebot import types
 
 # импортируем хранилище прогресса
-from others.progress_store import user_stats
+from .progress_store import user_stats
+
 
 # импортируем все викторины
 from quizzes.quiz_module_1 import quiz_questions as quiz1_questions

@@ -1,5 +1,6 @@
 from telebot import types
 from datetime import datetime
+from modules.progress_store import user_stats
 
 
 def register_handlers(bot):
