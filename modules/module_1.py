@@ -1,7 +1,7 @@
 from telebot import types
 
 # импортируем хранилище прогресса
-from .progress_store import user_stats
+from others.progress_store import update_stats
 
 
 # импортируем все викторины

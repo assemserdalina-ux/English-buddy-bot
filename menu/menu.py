@@ -1,6 +1,5 @@
 from telebot import types
-from datetime import datetime
-from modules.progress_store import user_stats
+from others.progress_store import format_p
 
 
 def register_handlers(bot):
@@ -24,9 +23,10 @@ def register_handlers(bot):
 
 
     # === Обработчик кнопки "My Progress" ===
-    @bot.message_handler(func=lambda msg: msg.text == "📊 My Progress")
-    def handle_progress(message):
-        bot.send_message(message.chat.id, "📊 Your progress will appear here soon.")
+    @bot.message_handler(func=lambda m: m.text == "📊 My Progress")
+    def handle_my_progress(message):
+        text = format_progress(message.chat.id)
+        bot.send_message(message.chat.id, text, parse_mode="Markdown")
 
     # === Обработчик кнопки "Help" ===
     @bot.message_handler(func=lambda msg: msg.text == "❓ Help")
