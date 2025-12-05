@@ -1,5 +1,5 @@
 from telebot import types
-from others.progress_store import format_p
+from others.progress_store import format_progress
 
 
 def register_handlers(bot):
