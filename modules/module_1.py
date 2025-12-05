@@ -1,5 +1,31 @@
 from telebot import types
-from quizzes.quiz_module_1 import quiz_questions
+
+# импортируем все викторины
+from quizzes.quiz_module_1 import quiz_questions as quiz1_questions
+from quizzes.quiz_module_2 import quiz_questions as quiz2_questions
+from quizzes.quiz_module_3 import quiz_questions as quiz3_questions
+from quizzes.quiz_module_4 import quiz_questions as quiz4_questions
+from quizzes.quiz_module_5 import quiz_questions as quiz5_questions
+from quizzes.quiz_module_6 import quiz_questions as quiz6_questions
+from quizzes.quiz_module_7 import quiz_questions as quiz7_questions
+from quizzes.quiz_module_8 import quiz_questions as quiz8_questions
+from quizzes.quiz_module_9 import quiz_questions as quiz9_questions
+
+# номер модуля -> список вопросов
+QUIZ_DATA = {
+    1: quiz1_questions,
+    2: quiz2_questions,
+    3: quiz3_questions,
+    4: quiz4_questions,
+    5: quiz5_questions,
+    6: quiz6_questions,
+    7: quiz7_questions,
+    8: quiz8_questions,
+    9: quiz9_questions,
+}
+
+# user_id -> {"module": int, "index": int, "score": int}
+user_progress = {}
 
 
 def register_handlers(bot):
@@ -66,43 +92,50 @@ def register_handlers(bot):
                 f"❌ {action.capitalize()} file for Module {num} not found."
             )
 
-    # ====== ИНТЕРАКТИВНАЯ ВИКТОРИНА ДЛЯ MODULE 1 ======
-    # Храним прогресс викторины по пользователям
-    user_progress = {}
+    # =========== ОБЩИЙ КВИЗ ДЛЯ quiz_1 .. quiz_9 ===========
 
-    # Запуск викторины по нажатию "📝 Quiz" в Module 1
-    @bot.callback_query_handler(func=lambda call: call.data == "quiz_1")
+    def get_questions_for_user(user_id):
+        module_num = user_progress[user_id]["module"]
+        return QUIZ_DATA.get(module_num, [])
+
+    @bot.callback_query_handler(func=lambda call: call.data.startswith("quiz_"))
     def start_quiz(call):
         user_id = call.from_user.id
-        user_progress[user_id] = {"index": 0, "score": 0}
-        bot.send_message(user_id, "📝 Quiz for Module 1. Type your answers in the chat.")
+        module_num = int(call.data.split("_")[1])
+
+        questions = QUIZ_DATA.get(module_num)
+        if not questions:
+            bot.send_message(user_id, "❌ Quiz for this module is not ready yet.")
+            return
+
+        user_progress[user_id] = {"module": module_num, "index": 0, "score": 0}
         ask_question(user_id)
 
-    # Задаём вопрос по текущему индексу
     def ask_question(user_id):
+        questions = get_questions_for_user(user_id)
         index = user_progress[user_id]["index"]
-        if index < len(quiz_questions):
-            question = quiz_questions[index]["question"]
+
+        if index < len(questions):
+            question = questions[index]["question"]
             bot.send_message(user_id, f"❓ Question {index + 1}: {question}")
         else:
             score = user_progress[user_id]["score"]
             bot.send_message(
                 user_id,
-                f"✅ Quiz completed! Your score: {score}/{len(quiz_questions)}"
+                f"✅ Quiz completed! Your score: {score}/{len(questions)}"
             )
-            # очищаем прогресс
             del user_progress[user_id]
 
-    # Проверка ответа пользователя
     @bot.message_handler(func=lambda message: message.chat.id in user_progress)
     def check_answer(message):
         user_id = message.chat.id
+        questions = get_questions_for_user(user_id)
         index = user_progress[user_id]["index"]
-        correct_answer = quiz_questions[index]["answer"]
+        correct_answer = questions[index]["answer"]
 
         user_answer = message.text.strip().lower()
 
-        # Если правильный ответ — список (например, несколько вариантов)
+        # correct_answer может быть строкой или списком
         if isinstance(correct_answer, list):
             normalized = [str(a).strip().lower() for a in correct_answer]
             is_correct = user_answer in normalized
@@ -117,4 +150,3 @@ def register_handlers(bot):
 
         user_progress[user_id]["index"] += 1
         ask_question(user_id)
-
