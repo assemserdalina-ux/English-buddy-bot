@@ -71,11 +71,11 @@ def register_handlers(bot):
     user_progress = {}
 
     # Запуск викторины по нажатию "📝 Quiz" в Module 1
-    @bot.callback_query_handler(func=lambda call: call.data == "quiz_1")
+    @bot.callback_query_handler(func=lambda call: call.data == "quiz_2")
     def start_quiz(call):
         user_id = call.from_user.id
         user_progress[user_id] = {"index": 0, "score": 0}
-        bot.send_message(user_id, "📝 Quiz for Module 1. Type your answers in the chat.")
+        bot.send_message(user_id, "📝 Quiz for Module 2. Type your answers in the chat.")
         ask_question(user_id)
 
     # Задаём вопрос по текущему индексу
