@@ -30,6 +30,6 @@ quiz_questions = [
     },
     {
         "question": "Q7: Gap-fill: They ______ (not finish) the song _____ . (use 'yet')",
-        "answer": ["haven't finished yet", "havent finished yet"]
+        "answer": ["haven't finished yet", "havent finished yet", "have not finished yet"]
     }
 ]

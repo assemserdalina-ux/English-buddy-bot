@@ -1,4 +1,6 @@
 from telebot import types
+from others.progress_store import user_stats
+
 
 # импортируем все викторины
 from quizzes.quiz_module_1 import quiz_questions as quiz1_questions
@@ -10,6 +12,7 @@ from quizzes.quiz_module_6 import quiz_questions as quiz6_questions
 from quizzes.quiz_module_7 import quiz_questions as quiz7_questions
 from quizzes.quiz_module_8 import quiz_questions as quiz8_questions
 from quizzes.quiz_module_9 import quiz_questions as quiz9_questions
+from others.progress_store import user_stats
 
 # номер модуля -> список вопросов
 QUIZ_DATA = {
@@ -92,6 +95,21 @@ def register_handlers(bot):
                 f"❌ {action.capitalize()} file for Module {num} not found."
             )
 
+            def update_stats(user_id, module_num, score, total):
+                """
+                Save quiz result for this user and module.
+                """
+                stats_for_user = user_stats.setdefault(user_id, {})
+                m = stats_for_user.setdefault(
+                    module_num,
+                    {"attempts": 0, "best": 0, "last": 0, "total": total},
+                )
+                m["attempts"] += 1
+                m["last"] = score
+                m["total"] = total
+                if score > m["best"]:
+                    m["best"] = score
+
     # =========== ОБЩИЙ КВИЗ ДЛЯ quiz_1 .. quiz_9 ===========
 
     def get_questions_for_user(user_id):
@@ -118,15 +136,22 @@ def register_handlers(bot):
         if index < len(questions):
             question = questions[index]["question"]
             bot.send_message(user_id, f"❓ Question {index + 1}: {question}")
-        else:
+            else:
             score = user_progress[user_id]["score"]
+            module_num = user_progress[user_id]["module"]
+            total = len(questions)
+
+            # save stats for "My Progress"
+            update_stats(user_id, module_num, score, total)
+
             bot.send_message(
                 user_id,
-                f"✅ Quiz completed! Your score: {score}/{len(questions)}"
+                f"✅ Quiz completed! Your score: {score}/{total}"
             )
             del user_progress[user_id]
 
-    @bot.message_handler(func=lambda message: message.chat.id in user_progress)
+
+@bot.message_handler(func=lambda message: message.chat.id in user_progress)
     def check_answer(message):
         user_id = message.chat.id
         questions = get_questions_for_user(user_id)
