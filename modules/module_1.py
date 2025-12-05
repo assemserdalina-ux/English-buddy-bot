@@ -1,6 +1,7 @@
 from telebot import types
-from others.progress_store import user_stats
 
+# импортируем хранилище прогресса
+from others.progress_store import user_stats
 
 # импортируем все викторины
 from quizzes.quiz_module_1 import quiz_questions as quiz1_questions
@@ -12,7 +13,6 @@ from quizzes.quiz_module_6 import quiz_questions as quiz6_questions
 from quizzes.quiz_module_7 import quiz_questions as quiz7_questions
 from quizzes.quiz_module_8 import quiz_questions as quiz8_questions
 from quizzes.quiz_module_9 import quiz_questions as quiz9_questions
-from others.progress_store import user_stats
 
 # номер модуля -> список вопросов
 QUIZ_DATA = {
@@ -37,7 +37,11 @@ def register_handlers(bot):
     def show_modules(message):
         markup = types.InlineKeyboardMarkup(row_width=3)
         for i in range(1, 10):
-            markup.add(types.InlineKeyboardButton(f"📘 Module {i}", callback_data=f"module_{i}"))
+            markup.add(
+                types.InlineKeyboardButton(
+                    f"📘 Module {i}", callback_data=f"module_{i}"
+                )
+            )
         bot.send_message(message.chat.id, "📚 Choose a module:", reply_markup=markup)
 
     # ===== Выбор модуля: показать опции Vocabulary / Grammar / Quiz =====
@@ -45,16 +49,32 @@ def register_handlers(bot):
     def show_module_options(call):
         module_num = call.data.split("_")[1]
         markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton("📚 Vocabulary", callback_data=f"vocab_{module_num}"))
-        markup.add(types.InlineKeyboardButton("📖 Grammar", callback_data=f"grammar_{module_num}"))
-        markup.add(types.InlineKeyboardButton("📝 Quiz", callback_data=f"quiz_{module_num}"))
-        markup.add(types.InlineKeyboardButton("◀️ Back to Modules", callback_data="back_to_modules"))
+        markup.add(
+            types.InlineKeyboardButton(
+                "📚 Vocabulary", callback_data=f"vocab_{module_num}"
+            )
+        )
+        markup.add(
+            types.InlineKeyboardButton(
+                "📖 Grammar", callback_data=f"grammar_{module_num}"
+            )
+        )
+        markup.add(
+            types.InlineKeyboardButton(
+                "📝 Quiz", callback_data=f"quiz_{module_num}"
+            )
+        )
+        markup.add(
+            types.InlineKeyboardButton(
+                "◀️ Back to Modules", callback_data="back_to_modules"
+            )
+        )
 
         bot.edit_message_text(
             f"📘 Module {module_num} options:",
             call.message.chat.id,
             call.message.message_id,
-            reply_markup=markup
+            reply_markup=markup,
         )
 
     # ===== Кнопка "◀️ Back to Modules" =====
@@ -62,12 +82,16 @@ def register_handlers(bot):
     def back_to_modules(call):
         markup = types.InlineKeyboardMarkup(row_width=3)
         for i in range(1, 10):
-            markup.add(types.InlineKeyboardButton(f"📘 Module {i}", callback_data=f"module_{i}"))
+            markup.add(
+                types.InlineKeyboardButton(
+                    f"📘 Module {i}", callback_data=f"module_{i}"
+                )
+            )
         bot.edit_message_text(
             "📚 Choose a module:",
             call.message.chat.id,
             call.message.message_id,
-            reply_markup=markup
+            reply_markup=markup,
         )
 
     # ===== Vocabulary / Grammar из файлов (БЕЗ quiz_!) =====
@@ -87,30 +111,28 @@ def register_handlers(bot):
             bot.send_message(
                 call.message.chat.id,
                 f"<b>{title}</b>\n\n{content}",
-                parse_mode='html'
+                parse_mode="html",
             )
         except FileNotFoundError:
             bot.send_message(
                 call.message.chat.id,
-                f"❌ {action.capitalize()} file for Module {num} not found."
+                f"❌ {action.capitalize()} file for Module {num} not found.",
             )
 
-            def update_stats(user_id, module_num, score, total):
-                """
-                Save quiz result for this user and module.
-                """
-                stats_for_user = user_stats.setdefault(user_id, {})
-                m = stats_for_user.setdefault(
-                    module_num,
-                    {"attempts": 0, "best": 0, "last": 0, "total": total},
-                )
-                m["attempts"] += 1
-                m["last"] = score
-                m["total"] = total
-                if score > m["best"]:
-                    m["best"] = score
+    # ======== функции для статистики и викторин ========
 
-    # =========== ОБЩИЙ КВИЗ ДЛЯ quiz_1 .. quiz_9 ===========
+    def update_stats(user_id, module_num, score, total):
+        """Сохранить результат викторины для пользователя и модуля."""
+        stats_for_user = user_stats.setdefault(user_id, {})
+        m = stats_for_user.setdefault(
+            module_num,
+            {"attempts": 0, "best": 0, "last": 0, "total": total},
+        )
+        m["attempts"] += 1
+        m["last"] = score
+        m["total"] = total
+        if score > m["best"]:
+            m["best"] = score
 
     def get_questions_for_user(user_id):
         module_num = user_progress[user_id]["module"]
@@ -134,24 +156,24 @@ def register_handlers(bot):
         index = user_progress[user_id]["index"]
 
         if index < len(questions):
+            # есть следующий вопрос
             question = questions[index]["question"]
             bot.send_message(user_id, f"❓ Question {index + 1}: {question}")
-            else:
+        else:
+            # вопросы закончились – сохраняем статистику
             score = user_progress[user_id]["score"]
             module_num = user_progress[user_id]["module"]
             total = len(questions)
 
-            # save stats for "My Progress"
             update_stats(user_id, module_num, score, total)
 
             bot.send_message(
                 user_id,
-                f"✅ Quiz completed! Your score: {score}/{total}"
+                f"✅ Quiz completed! Your score: {score}/{total}",
             )
             del user_progress[user_id]
 
-
-@bot.message_handler(func=lambda message: message.chat.id in user_progress)
+    @bot.message_handler(func=lambda message: message.chat.id in user_progress)
     def check_answer(message):
         user_id = message.chat.id
         questions = get_questions_for_user(user_id)
@@ -171,7 +193,10 @@ def register_handlers(bot):
             user_progress[user_id]["score"] += 1
             bot.send_message(user_id, "✅ Correct!")
         else:
-            bot.send_message(user_id, f"❌ Wrong. Correct answer was: {correct_answer}")
+            bot.send_message(
+                user_id,
+                f"❌ Wrong. Correct answer was: {correct_answer}",
+            )
 
         user_progress[user_id]["index"] += 1
         ask_question(user_id)
