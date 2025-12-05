@@ -1,27 +1,21 @@
-Grammar focus: Past Simple vs Past Continuous (review)
+📘 Grammar
+Past Simple vs Past Continuous
 
-1. Past Simple – finished actions in the past
-Form:
-regular: play → played, start → started
-irregular: go → went, have → had, see → saw
+🔹 Past Simple – finished actions
+✔ He won the race yesterday.
+✔ They trained last week.
 
-Uses:
-• completed actions: He won the race yesterday.
-• actions in a finished time period: They trained hard last week.
+🔹 Past Continuous – action in progress in the past
+✔ I was running when I fell.
+✔ They were playing while it rained.
 
-2. Past Continuous – actions in progress at a moment in the past
-Form:
-was / were + verb-ing
-• I was running.
-• They were playing basketball.
+🛠 Structure
 
-Uses:
-• background action: I was running when I fell.
-• two actions at the same time: She was stretching while he was warming up.
+Past Simple:
+regular: play → played
+irregular: go → went, see → saw
 
-3. Together
-• Past Continuous + Past Simple:
-  I was playing football when I hurt my ankle.
-
-Time words:
-yesterday, last week, two days ago, while, when
+Past Continuous:
+was/were + verb+ing
+✔ She was running.
+✔ They were stretching.
