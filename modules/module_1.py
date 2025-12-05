@@ -122,20 +122,7 @@ def register_handlers(bot):
 
     # ======== функции для статистики и викторин ========
 
-    def update_stats(user_id, module_num, score, total):
-        """Сохранить результат викторины для пользователя и модуля."""
-        stats_for_user = user_stats.setdefault(user_id, {})
-        m = stats_for_user.setdefault(
-            module_num,
-            {"attempts": 0, "best": 0, "last": 0, "total": total},
-        )
-        m["attempts"] += 1
-        m["last"] = score
-        m["total"] = total
-        if score > m["best"]:
-            m["best"] = score
-
-    def get_questions_for_user(user_id):
+       def get_questions_for_user(user_id):
         module_num = user_progress[user_id]["module"]
         return QUIZ_DATA.get(module_num, [])
 
