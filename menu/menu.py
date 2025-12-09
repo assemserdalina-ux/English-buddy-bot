@@ -42,4 +42,21 @@ def register_handlers(bot):
     # === Обработчик кнопки "Help" ===
     @bot.message_handler(func=lambda msg: msg.text == "❓ Help")
     def handle_help(message):
-        bot.send_message(message.chat.id, "ℹ Use /menu anytime to return to the main menu.")
+        help_text = (
+            "📘 *How to Use This Bot*\n\n"
+            "📚 *Modules*\n"
+            "Study vocabulary, grammar, and take quizzes for each module.\n\n"
+            "📝 *Enroll*\n"
+            "Register to save your quiz results and track your progress.\n\n"
+            "📊 *My Progress*\n"
+            "View completed modules and your quiz scores.\n\n"
+            "❓ *Quizzes*\n"
+            "• Use A/B/C for multiple-choice.\n"
+            "• Use T/F for True–False.\n"
+            "• Type the correct word for gap-fill tasks.\n\n"
+            "⚙ *If something doesn’t work*\n"
+            "1) Use /menu to return to the main menu.\n"
+            "2) Restart the bot if needed."
+        )
+
+        bot.send_message(message.chat.id, help_text, parse_mode='Markdown')
