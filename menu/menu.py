@@ -12,7 +12,12 @@ def register_handlers(bot):
             types.KeyboardButton("📊 My Progress"),
             types.KeyboardButton("❓ Help")
         )
-        bot.send_message(message.chat.id, "👋 Welcome to English Buddy! Choose an option:", reply_markup=markup)
+        bot.send_message(message.chat.id, "👋Welcome to English Buddy!
+
+📚 Modules – study vocabulary, grammar and take quizzes.
+📝 Enroll – register to save your progress.
+📊 My Progress – check your completed modules and quiz scores.
+❓ Help – learn how the bot works.", reply_markup=markup)
 
     @bot.message_handler(func=lambda msg: msg.text == "📚 Modules")
     def handle_modules(message):
