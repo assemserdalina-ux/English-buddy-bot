@@ -8,16 +8,22 @@ def register_handlers(bot):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         markup.add(
             types.KeyboardButton("📚 Modules"),
-            types.KeyboardButton("📝 Enroll"),     # кнопка регистрации
+            types.KeyboardButton("📝 Enroll"),
             types.KeyboardButton("📊 My Progress"),
             types.KeyboardButton("❓ Help")
         )
-        bot.send_message(message.chat.id, "👋Welcome to English Buddy!
 
-📚 Modules – study vocabulary, grammar and take quizzes.
-📝 Enroll – register to save your progress.
-📊 My Progress – check your completed modules and quiz scores.
-❓ Help – learn how the bot works.", reply_markup=markup)
+        text = (
+            "👋 Welcome to English Buddy!\n"
+            "\n"
+            "📚 Modules – study vocabulary, grammar and take quizzes.\n"
+            "📝 Enroll – register to save your progress.\n"
+            "📊 My Progress – check your completed modules and quiz scores.\n"
+            "❓ Help – learn how the bot works."
+        )
+
+        bot.send_message(message.chat.id, text, reply_markup=markup)
+
 
     @bot.message_handler(func=lambda msg: msg.text == "📚 Modules")
     def handle_modules(message):
